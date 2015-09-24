@@ -1,0 +1,43 @@
+ABSTRACT INFORMATION
+====================
+* This example contains 2 programs MAIN and EXT.  The MAIN program might
+  be a bootloader or some other small program that gets stored in on-chip
+  EPROM or another small ROM device.  The EXT program is the real application
+  that is stored in a large ROM device (FLASH/EPROM/ROM/NVRAM) that may be
+  field reprogrammable.
+
+* The MAIN program invokes the EXT program through a single entry point at
+  the beginning of the EXT memory device.  This is 0x8000 in my example but
+  it may be anywhere in the address space.
+
+* The EXT program calls its own functions but it may also call functions in
+  the MAIN program.  This part is kinda tricky since there is no way to handle
+  the data overlaying stuff very well.
+
+* BOOT.C contains the MAIN program that is executed on RESET.
+
+* EXT.C contains the EXT program.
+
+* There are two project files:  BOOT.UV2 and EXT.UV2.
+
+* To relocate the EXT project...
+  1. Modify STARTEXT.A51 (look for CSEG AT 08000h).
+  2. Change the Linker Options Size/Location for CODE to the new start address.
+  3. Modify the starting address in BOOT.H
+
+* The functions in BOOT that may be called from EXT have a few limitations.
+  1. They must be declared as REENTRANT.
+  2. You must manage the external global variables that they use so that they
+     are not overwritten by the EXT program.
+  3. They must be enumerated in the jump table.
+  4. If the functions require different arguments, you may use ... in the jump
+     table argument list.
+
+* Both projects can be tested using the BOOT.UV2 project. The uVision Debugger 
+  uses an INI file that contains an 'LOAD ext incremental' command to load
+  the EXE project into the Debugger.
+
+  The 'External Part' allows you to access these project sections quickly.
+
+  
+
